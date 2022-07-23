@@ -7,7 +7,7 @@ from models import LastChapter
 from plugins.client import MangaClient, MangaCard, MangaChapter
 
 
-class MangaHasuClient(MangaClient):
+class Manga18fxClient(MangaClient):
     base_url = urlparse("https://manga18fx.com/")
     search_url = urljoin(base_url.geturl(), "search/autosearch")
     search_param = 'key'
@@ -16,7 +16,7 @@ class MangaHasuClient(MangaClient):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'
     }
 
-    def __init__(self, *args, name="MangaHasu", **kwargs):
+    def __init__(self, *args, name="Manga18fx", **kwargs):
         super().__init__(*args, name=name, headers=self.pre_headers, **kwargs)
 
     def mangas_from_page(self, page: bytes):
