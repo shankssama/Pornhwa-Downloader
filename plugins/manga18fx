@@ -7,7 +7,7 @@ from models import LastChapter
 from plugins.client import MangaClient, MangaCard, MangaChapter
 
 
-class Manga18fxClient(MangaClient):
+class Manga18fxClient(Manga18fxClient):
     base_url = urlparse("https://manga18fx.com/")
     search_url = urljoin(base_url.geturl(), "search/autosearch")
     search_param = 'key'
