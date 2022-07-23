@@ -15,7 +15,7 @@ from img2pdf.core import fld2pdf
 from img2tph.core import img2tph
 from plugins import MangaClient, ManhuaKoClient, MangaCard, MangaChapter, ManhuaPlusClient, TMOClient, MangaDexClient, \
     MangaSeeClient, MangasInClient, McReaderClient, MangaKakalotClient, ManganeloClient, ManganatoClient, \
-    KissMangaClient, MangatigreClient, MangaHasuClient
+    KissMangaClient, MangatigreClient, Manga18fxClient, MangaHasuClient
 import os
 
 from pyrogram import Client, filters
@@ -47,7 +47,7 @@ plugin_dicts: Dict[str, Dict[str, MangaClient]] = {
         "Manganelo": ManganeloClient(),
         "Manganato": ManganatoClient(),
         "KissManga": KissMangaClient(),
-        "MangaHasu": MangaHasuClient()
+        "Manga18fx": Manga18fxClient()
     },
     "🇪🇸 ES": {
         "MangaDex": MangaDexClient(language=("es-la", "es")),
@@ -152,9 +152,11 @@ async def on_start(client: Client, message: Message):
                         "How to use? Just type the name of some manga you want to keep up to date.\n"
                         "\n"
                         "For example:\n"
-                        "`One Piece`\n"
+                        "`Secret Class`\n"
                         "\n"
-                        "Check /help for more information. Updates : @Wizard_Bots.")
+                        "Check /help for more information.\n"
+                        "\n"
+                        "Updates : @Wizard_Bots.")
 
 
 @bot.on_message(filters=filters.command(['help']))
