@@ -15,7 +15,7 @@ from img2pdf.core import fld2pdf
 from img2tph.core import img2tph
 from plugins import MangaClient, ManhuaKoClient, MangaCard, MangaChapter, ManhuaPlusClient, TMOClient, MangaDexClient, \
     MangaSeeClient, MangasInClient, McReaderClient, MangaKakalotClient, ManganeloClient, ManganatoClient, \
-    KissMangaClient, MangatigreClient, Manga18fxClient, MangaHasuClient
+    KissMangaClient, MangatigreClient, MangaHasuClient, MangaBuddyClient, AsuraScansClient
 import os
 
 from pyrogram import Client, filters
@@ -47,7 +47,9 @@ plugin_dicts: Dict[str, Dict[str, MangaClient]] = {
         "Manganelo": ManganeloClient(),
         "Manganato": ManganatoClient(),
         "KissManga": KissMangaClient(),
-        "Manga18fx": Manga18fxClient()
+        "MangaHasu": MangaHasuClient(),
+        "MangaBuddy": MangaBuddyClient(),
+        "AsuraScans": AsuraScansClient(),
     },
     "🇪🇸 ES": {
         "MangaDex": MangaDexClient(language=("es-la", "es")),
@@ -75,7 +77,7 @@ class OutputOptions(enum.IntEnum):
         return self.value | other
 
 
-disabled = ["[🇬🇧 EN] McReader"]
+disabled = ["[🇬🇧 EN] McReader", "[🇬🇧 EN] Manhuaplus"]
 
 plugins = dict()
 for lang, plugin_dict in plugin_dicts.items():
@@ -152,11 +154,9 @@ async def on_start(client: Client, message: Message):
                         "How to use? Just type the name of some manga you want to keep up to date.\n"
                         "\n"
                         "For example:\n"
-                        "`Secret Class`\n"
+                        "`Fire Force`\n"
                         "\n"
-                        "Check /help for more information.\n"
-                        "\n"
-                        "Updates : @Wizard_Bots.")
+                        "Check /help for more information.")
 
 
 @bot.on_message(filters=filters.command(['help']))
@@ -199,8 +199,20 @@ async def on_subs(client: Client, message: Message):
 
     if not lines:
         return await message.reply("You have no subscriptions yet.")
-    body = "\n".join(lines)
-    await message.reply(f'Your subscriptions:\n\n{body}', disable_web_page_preview=True)
+
+    body = []
+    counter = 0
+    for line in lines:
+        if counter + len(line) > 4000:
+            text = "\n".join(body)
+            await message.reply(f'Your subscriptions:\n\n{text}', disable_web_page_preview=True)
+            body = []
+            counter = 0
+        body.append(line)
+        counter += len(line)
+
+    text = "\n".join(body)
+    await message.reply(f'Your subscriptions:\n\n{text}', disable_web_page_preview=True)
 
 
 @bot.on_message(filters=filters.regex(r'^/cancel ([^ ]+)$'))
@@ -331,7 +343,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
             pagination.message = message
         except pyrogram.errors.BadRequest as e:
             file_name = f'pictures/{pagination.manga.unique()}.jpg'
-            await pagination.manga.client.get_url(pagination.manga.picture_url, cache=True, file_name=file_name)
+            await pagination.manga.client.get_cover(pagination.manga, cache=True, file_name=file_name)
             message = await bot.send_photo(callback.from_user.id,
                                            f'./cache/{pagination.manga.client.name}/{file_name}',
                                            f'{pagination.manga.name}\n'
@@ -560,11 +572,11 @@ async def update_mangas():
                 client_url_dictionary[client].add(url)
 
     for client, urls in client_url_dictionary.items():
-        # print('')
-        # print(f'Updating {client.name}')
-        # print(f'Urls:\t{list(urls)}')
-        # new_urls = [url for url in urls if not chapters_dictionary.get(url)]
-        # print(f'New Urls:\t{new_urls}')
+        print('')
+        print(f'Updating {client.name}')
+        print(f'Urls:\t{list(urls)}')
+        new_urls = [url for url in urls if not chapters_dictionary.get(url)]
+        print(f'New Urls:\t{new_urls}')
         to_check = [chapters_dictionary[url] for url in urls if chapters_dictionary.get(url)]
         if len(to_check) == 0:
             continue
@@ -572,11 +584,12 @@ async def update_mangas():
             updated, not_updated = await client.check_updated_urls(to_check)
         except BaseException as e:
             print(f"Error while checking updates for site: {client.name}, err: ", e)
+            updated = []
             not_updated = list(urls)
         for url in not_updated:
             del url_client_dictionary[url]
-        # print(f'Updated:\t{list(updated)}')
-        # print(f'Not Updated:\t{list(not_updated)}')
+        print(f'Updated:\t{list(updated)}')
+        print(f'Not Updated:\t{list(not_updated)}')
 
     updated = dict()
 
