@@ -158,7 +158,7 @@ async def on_start(client: Client, message: Message):
                         "\n"
                         "Check /help for more information.\n"
                         "\n"
-                       Update Channel : @Wizard_Bots.)
+                       "Update Channel : @Wizard_Bots.")
 
 
 @bot.on_message(filters=filters.command(['help']))
