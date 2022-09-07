@@ -12,4 +12,5 @@ from .manganato import ManganatoClient
 from .kissmanga import KissMangaClient
 from .mangatigre import MangatigreClient
 from .mangahasu import MangaHasuClient
-from .manga18fx import Manga18fxClient
+from .mangabuddy import MangaBuddyClient
+from .asurascans import AsuraScansClient
